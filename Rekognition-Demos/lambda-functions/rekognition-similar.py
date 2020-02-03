@@ -1,6 +1,8 @@
+import json
 import boto3
 
 def lambda_handler(event, context):
+    # TODO implement
     
     rekognition = boto3.client('rekognition')
     
@@ -12,13 +14,13 @@ def lambda_handler(event, context):
         response = rekognition.compare_faces(
             SourceImage={
                 'S3Object': {
-                    'Bucket': 'xxxxxxx',
+                    'Bucket': 'ai-demos-02032020',
                     'Name': suspect + '.jpg'
                 }
             },
             TargetImage={
                 'S3Object': {
-                    'Bucket': 'xxxxxxx',
+                    'Bucket': 'ai-demos-02032020',
                     'Name': 'security-camera.jpg'
                 }
             }
