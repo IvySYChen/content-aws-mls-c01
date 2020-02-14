@@ -1,0 +1,34 @@
+# https://docs.aws.amazon.com/polly/latest/dg/voicelist.html
+
+# remember to edit environment variables
+#dict = {LANGUAGECODE : cmn-CN; OUTPUTS3BUCKETNAME: output-cfst-2178-967d8f6dccf205dc6d6a25d903969238; VOICEID : Zhiyu}
+import boto3  
+import os
+
+polly = boto3.client('polly')
+
+def lambda_handler(event, context):
+  
+    payload = event['Input'][0]['Payload']
+    payload_other = event['Input'][1]['Payload']
+    
+    payload.update(payload_other)
+    
+    translatedText = payload['TranslatedText']
+    transcriptionJobName = payload['TranscriptionJobName']
+    sentiment = payload['Sentiment']
+
+    response = polly.start_speech_synthesis_task(
+        LanguageCode=os.environ['LANGUAGECODE'],
+        OutputFormat='mp3',
+        OutputS3BucketName=os.environ['OUTPUTS3BUCKETNAME'],
+        OutputS3KeyPrefix=sentiment + "/" + transcriptionJobName + "-" + sentiment,
+        Text=translatedText,
+        TextType='text',
+        VoiceId=os.environ['VOICEID']
+    )
+
+    return {
+        'TaskId': response['SynthesisTask']['TaskId'],
+        'TranscriptionJobName': transcriptionJobName
+    }
